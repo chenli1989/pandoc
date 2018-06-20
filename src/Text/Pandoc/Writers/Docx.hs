@@ -954,7 +954,7 @@ blockToOpenXML' _ HorizontalRule = do
     $ mknode "v:rect" [("style","width:0;height:1.5pt"),
                        ("o:hralign","center"),
                        ("o:hrstd","t"),("o:hr","t")] () ]
-blockToOpenXML' opts (Table (ident,classes,kvs) caption aligns widths headers rows) = do
+blockToOpenXML' opts (Table caption aligns widths headers rows (ident,classes,kvs)) = do
   stylemod <- case lookup dynamicStyleKey kvs of
     Just sty -> do
         modify $ \s ->
