@@ -825,6 +825,12 @@ pStyleM styleName = do
   let sty' = getStyleId styleName $ sParaStyleMap styleMaps
   return $ mknode "w:pStyle" [("w:val",sty')] ()
 
+tblStyleName :: (PandocMonad m) => String -> WS m XML.Element
+tblStyleName styleName = do
+  styleMaps <- gets stStyleMaps
+  let sty' = getStyleId styleName $ sParaStyleMap styleMaps
+  return sty'
+
 rCustomStyle :: String -> Element
 rCustomStyle sty = mknode "w:rStyle" [("w:val",sty)] ()
 
@@ -949,6 +955,14 @@ blockToOpenXML' _ HorizontalRule = do
                        ("o:hralign","center"),
                        ("o:hrstd","t"),("o:hr","t")] () ]
 blockToOpenXML' opts (Table caption aligns widths headers rows) = do
+  stylemod <- case lookup dynamicStyleKey kvs of
+    Just sty -> do
+        modify $ \s ->
+          s{stDynamicParaProps = Set.insert sty
+              (stDynamicParaProps s)}
+        return $ withParaPropM (tblStyleName sty)
+    _ -> return id
+
   setFirstPara
   let captionStr = stringify caption
   caption' <- if null caption
@@ -984,7 +998,7 @@ blockToOpenXML' opts (Table caption aligns widths headers rows) = do
     caption' ++
     [mknode "w:tbl" []
       ( mknode "w:tblPr" []
-        (   mknode "w:tblStyle" [("w:val","Table")] () :
+        (   mknode "w:tblStyle" [("w:val", show stylemod)] () | [("w:val","Table")] () :
             mknode "w:tblW" [("w:type", "pct"), ("w:w", show rowwidth)] () :
             mknode "w:tblLook" [("w:firstRow",if hasHeader then "1" else "0") ] () :
           [ mknode "w:tblCaption" [("w:val", captionStr)] ()
