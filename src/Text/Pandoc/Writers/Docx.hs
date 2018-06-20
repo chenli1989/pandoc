@@ -825,11 +825,11 @@ pStyleM styleName = do
   let sty' = getStyleId styleName $ sParaStyleMap styleMaps
   return $ mknode "w:pStyle" [("w:val",sty')] ()
 
-tblStyleM :: (PandocMonad m) => String -> WS m XML.Element
-tblStyleM styleName = do
-  styleMaps <- gets stStyleMaps
-  let sty' = getStyleId styleName $ sParaStyleMap styleMaps
-  return $ mknode "w:tblStyle" [("w:val",sty')] ()
+-- tblStyleM :: (PandocMonad m) => String -> WS m XML.Element
+-- tblStyleM styleName = do
+--   styleMaps <- gets stStyleMaps
+--   let sty' = getStyleId styleName $ sParaStyleMap styleMaps
+--   return $ mknode "w:tblStyle" [("w:val",sty')] ()
 
 rCustomStyle :: String -> Element
 rCustomStyle sty = mknode "w:rStyle" [("w:val",sty)] ()
