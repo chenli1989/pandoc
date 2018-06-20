@@ -954,14 +954,14 @@ blockToOpenXML' _ HorizontalRule = do
     $ mknode "v:rect" [("style","width:0;height:1.5pt"),
                        ("o:hralign","center"),
                        ("o:hrstd","t"),("o:hr","t")] () ]
-blockToOpenXML' opts (Table (_,_,kvs) caption aligns widths headers rows) = do
-  stylemod <- case lookup dynamicStyleKey kvs of
-    Just sty -> do
-        modify $ \s ->
-          s{stDynamicParaProps = Set.insert sty
-              (stDynamicParaProps s)}
-        return $ withParaPropM (tblStyleName sty)
-    _ -> return id
+blockToOpenXML' opts (Table caption aligns widths headers rows) = do
+  -- stylemod <- case lookup dynamicStyleKey kvs of
+  --   Just sty -> do
+  --       modify $ \s ->
+  --         s{stDynamicParaProps = Set.insert sty
+  --             (stDynamicParaProps s)}
+  --       return $ withParaPropM (tblStyleName sty)
+  --   _ -> return id
 
   setFirstPara
   let captionStr = stringify caption
@@ -999,7 +999,7 @@ blockToOpenXML' opts (Table (_,_,kvs) caption aligns widths headers rows) = do
     [mknode "w:tbl" []
       ( mknode "w:tblPr" []
         (   mknode "w:tblStyle" [("w:val", "Table")] () :
-            stylemod :
+            -- stylemod :
             mknode "w:tblW" [("w:type", "pct"), ("w:w", show rowwidth)] () :
             mknode "w:tblLook" [("w:firstRow",if hasHeader then "1" else "0") ] () :
           [ mknode "w:tblCaption" [("w:val", captionStr)] ()
